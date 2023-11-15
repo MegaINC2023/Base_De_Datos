@@ -1,0 +1,131 @@
+/*Sentencia de creacion de usuarios*/
+
+CREATE USER 'Administrador'@'localhost' IDENTIFIED BY 'admin_2023';
+CREATE USER 'BackOffice'@'localhost' IDENTIFIED BY 'BackOffice_2023';
+CREATE USER 'Almacenero'@'localhost' IDENTIFIED BY 'almacenero_2023';
+CREATE USER 'Chofer'@'localhost' IDENTIFIED BY 'chofer_2023';
+CREATE USER 'PerAdmin_Almacen'@'localhost' IDENTIFIED BY 'peradmin_2023';
+
+/*Sentencia asignacion de permisos*/
+GRANT ALL PRIVILEGES ON * . * TO 'Administrador'@'localhost';
+
+GRANT INSERT (id_almacen, id_empresa, calle, numero, localidad) ON Almacen TO BackOffice;
+GRANT SELECT (id_almacen, id_empresa, calle, numero, localidad) ON Almacen TO BackOffice;
+GRANT UPDATE (id_almacen, id_empresa, calle, numero, localidad) ON Almacen TO BackOffice;
+
+GRANT SELECT (id_almacen, id_empresa, calle, numero, localidad) ON Almacen TO Almacenero;
+GRANT SELECT (calle, numero, localidad) ON Almacen TO Chofer;
+GRANT SELECT (calle, numero, localidad) ON Almacen TO PerAdmin_Almacen;
+
+GRANT INSERT (id_lote, estado, peso, almacen_destino) ON Lote TO BackOffice;
+GRANT SELECT (id_lote, estado, peso, almacen_destino) ON Lote TO BackOffice;
+GRANT UPDATE (id_lote, estado, peso, almacen_destino) ON Lote TO BackOffice;
+
+GRANT SELECT (id_lote, estado, almacen_destino) ON Lote TO Almacenero;
+GRANT UPDATE (id_lote, estado) ON Lote TO Almacenero;
+GRANT SELECT (Peso) ON Lote TO Almacenero;
+GRANT SELECT (id_lote, estado, peso, almacen_destino) ON Lote TO Chofer;
+GRANT INSERT (almacen_destino) ON Lote TO PerAdmin_Almacen;
+GRANT SELECT (id_lote, Estado, Peso, almacen_destino) ON Lote TO PerAdmin_Almacen;
+GRANT UPDATE (id_lote, almacen_destino) ON Lote TO PerAdmin_Almacen;
+
+GRANT SELECT (id_Trayecto, origen, destino, distancia) ON Trayecto TO BackOffice;
+GRANT SELECT (id_Trayecto, origen, destino, distancia) ON Trayecto TO BackOffice;
+GRANT UPDATE (id_Trayecto, origen, destino, distancia) ON Trayecto TO BackOffice;
+GRANT SELECT (id_Trayecto, origen, destino, distancia) ON Trayecto TO Chofer;
+GRANT SELECT (id_Trayecto, origen, destino, distancia) ON Trayecto TO PerAdmin_Almacen;
+GRANT UPDATE (id_Trayecto, origen, destino, distancia) ON Trayecto TO PerAdmin_Almacen;
+
+GRANT INSERT (id_paquete, estado, fecha_registro, tipo, fragil) ON Paquete TO BackOffice;
+GRANT SELECT (id_paquete, estado, fecha_registro, tipo, fragil) ON Paquete TO BackOffice;
+GRANT UPDATE (id_paquete, estado, fecha_registro, tipo, fragil) ON Paquete TO BackOffice;
+GRANT SELECT (id_paquete, estado, fecha_registro, tipo, fragil) ON Paquete TO Almacenero;
+GRANT SELECT (tipo, fragil) ON Paquete TO Chofer;
+GRANT INSERT (fecha_registro) ON Paquete TO PerAdmin_Almacen;
+GRANT SELECT (id_paquete, estado, tipo, fragil) ON Paquete TO PerAdmin_Almacen;
+GRANT UPDATE (estado) ON Paquete TO PerAdmin_Almacen; 
+
+GRANT INSERT (id_paquete, calle, numero, localidad) ON Direccion TO BackOffice;
+GRANT SELECT (id_paquete, calle, numero, localidad) ON Direccion TO BackOffice;
+GRANT UPDATE (id_paquete, calle, numero, localidad) ON Direccion TO BackOffice;
+GRANT SELECT (id_paquete, calle, numero, localidad) ON Direccion TO Chofer;
+GRANT SELECT (id_paquete, calle, numero, localidad) ON Direccion TO PerAdmin_Almacen;
+GRANT UPDATE (calle, numero, localidad) ON Direccion TO PerAdmin_Almacen; 
+
+GRANT INSERT (localidad, departamento) ON Localidad TO BackOffice;
+GRANT SELECT (localidad, departamento) ON Localidad TO BackOffice;
+GRANT UPDATE (localidad, departamento) ON Localidad TO BackOffice;
+GRANT SELECT (localidad, departamento) ON Localidad TO Chofer;
+GRANT SELECT (localidad, departamento) ON Localidad TO PerAdmin_Almacen;
+GRANT UPDATE (localidad, departamento) ON Localidad TO PerAdmin_Almacen; 
+
+GRANT INSERT (matricula, estado, licencia) ON Vehiculo TO BackOffice;
+GRANT SELECT (matricula, estado, licencia) ON Vehiculo TO BackOffice;
+GRANT UPDATE (matricula, estado, licencia) ON Vehiculo TO BackOffice;
+GRANT SELECT (matricula) ON Vehiculo TO Almacenero;
+GRANT SELECT (matricula, estado, licencia) ON Vehiculo TO Chofer;
+GRANT UPDATE (estado) ON Vehiculo TO Chofer;
+GRANT SELECT (estado, licencia) ON Vehiculo TO PerAdmin_Almacen;
+
+GRANT INSERT (matricula, peso_max) ON Camion TO BackOffice;
+GRANT SELECT (matricula, peso_max) ON Camion TO BackOffice;
+GRANT UPDATE (matricula, peso_max) ON Camion TO BackOffice;
+GRANT SELECT (matricula) ON Camion TO Almacenero;
+GRANT SELECT (matricula, peso_max) ON Camion TO Almacenero;
+GRANT SELECT (matricula, peso_max) ON Camion TO Chofer;
+GRANT SELECT (matricula) ON Camion TO PerAdmin_Almacen;
+
+GRANT INSERT (matricula, peso_max) ON Camioneta TO BackOffice;
+GRANT SELECT (matricula, peso_max) ON Camioneta TO BackOffice;
+GRANT UPDATE (matricula, peso_max) ON Camioneta TO BackOffice;
+GRANT SELECT (matricula) ON Camioneta TO Almacenero;
+GRANT SELECT (matricula, peso_max) ON Camioneta TO Almacenero;
+GRANT SELECT (matricula, peso_max) ON Camioneta TO Chofer;
+GRANT SELECT (matricula) ON Camioneta TO PerAdmin_Almacen;
+
+GRANT INSERT (cedula, licencia, nombre, apellido) ON Chofer TO BackOffice;
+GRANT SELECT (cedula, licencia, nombre, apellido) ON Chofer TO BackOffice;
+GRANT UPDATE (cedula, licencia, nombre, apellido) ON Chofer TO BackOffice;
+GRANT SELECT (licencia) ON Chofer TO Chofer;
+GRANT SELECT (cedula, licencia, nombre, apellido) ON Chofer TO PerAdmin_Almacen;
+
+GRANT INSERT (cedula, matricula) ON Maneja TO BackOffice;
+GRANT SELECT (cedula, matricula) ON Maneja TO BackOffice;
+GRANT UPDATE (cedula, matricula) ON Maneja TO BackOffice;
+GRANT SELECT (cedula, matricula) ON Maneja TO Chofer;
+GRANT SELECT (cedula, matricula) ON Maneja TO PerAdmin_Almacen;
+
+GRANT INSERT (id_paquete, id_lote) ON Pertenece TO BackOffice;
+GRANT SELECT (id_paquete, id_lote) ON Pertenece TO BackOffice;
+GRANT UPDATE (id_paquete, id_lote) ON Pertenece TO BackOffice;
+GRANT SELECT (id_paquete, id_lote) ON Pertenece TO Almacenero; 
+GRANT SELECT (id_paquete, id_lote) ON Pertenece TO Chofer;
+GRANT INSERT (id_paquete, id_lote) ON Pertenece TO PerAdmin_Almacen;
+GRANT SELECT (id_paquete, id_lote) ON Pertenece TO PerAdmin_Almacen;
+GRANT UPDATE (id_paquete, id_lote) ON Pertenece TO PerAdmin_Almacen;
+
+GRANT INSERT (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) ON Viaja TO BackOffice;
+GRANT SELECT (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) ON Viaja TO BackOffice;
+GRANT UPDATE (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) ON Viaja TO BackOffice;
+GRANT SELECT (id_lote, id_almacen, id_trayecto) ON Viaja TO Almacenero;
+GRANT SELECT (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) ON Viaja TO Chofer;
+GRANT INSERT (fecha_llegada, hora_llegada) ON Viaja TO Chofer;
+GRANT SELECT (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) ON Viaja TO PerAdmin_Almacen;
+GRANT UPDATE (fecha_llegada, hora_llegada) ON Viaja TO PerAdmin_Almacen;
+ 
+GRANT INSERT, SELECT, UPDATE (id_lote, id_trayecto, id_almacen, matricula) ON Realiza TO BackOffice;
+GRANT SELECT (id_lote, id_trayecto, id_almacen, matricula) ON Realiza TO Chofer;
+GRANT SELECT (id_lote, id_trayecto, id_almacen, matricula) ON Realiza TO PerAdmin_Almacen;
+GRANT UPDATE (id_lote, id_trayecto, id_almacen, matricula) ON Realiza TO PerAdmin_Almacen;
+
+GRANT INSERT (id_trayecto, id_almacen, posicion) ON Tiene TO BackOffice;
+GRANT SELECT (id_trayecto, id_almacen, posicion) ON Tiene TO BackOffice;
+GRANT UPDATE (id_trayecto, id_almacen, posicion) ON Tiene TO BackOffice;
+GRANT SELECT (id_trayecto, id_almacen, posicion) ON Tiene TO Chofer;
+GRANT UPDATE (posicion) ON Tiene TO Chofer;
+GRANT SELECT (id_trayecto, id_almacen, posicion) ON Tiene TO PerAdmin_Almacen;
+GRANT UPDATE (id_trayecto, id_almacen) ON Tiene TO PerAdmin_Almacen;
+
+GRANT INSERT (id_usuario, tipo_de_usuario, cedula, contraseña) ON Login TO BackOffice;
+GRANT SELECT (id_usuario, tipo_de_usuario, cedula, contraseña) ON Login TO BackOffice;
+GRANT UPDATE (id_usuario, tipo_de_usuario, cedula, contraseña) ON Login TO BackOffice;

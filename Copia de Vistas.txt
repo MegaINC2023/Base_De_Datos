@@ -1,0 +1,56 @@
+use megainc;
+
+CREATE VIEW Vista_Almacen_Trayecto_Lote AS
+SELECT
+    A.id_almacen AS Almacen_ID,
+    A.calle AS Calle_Almacen,
+    A.numero AS Numero_Almacen,
+    A.localidad AS Localidad_Almacen,
+    T.id_trayecto AS Trayecto_ID,
+    T.origen AS Origen_Trayecto,
+    T.destino AS Destino_Trayecto,
+    L.id_lote AS Lote_ID,
+    L.estado AS Estado_Lote
+FROM Almacen A
+LEFT JOIN Tiene Ti ON A.id_almacen = Ti.id_almacen
+LEFT JOIN Trayecto T ON Ti.id_trayecto = T.id_trayecto
+LEFT JOIN Viaja V ON A.id_almacen = V.id_almacen
+LEFT JOIN Lote L ON V.id_lote = L.id_lote;
+
+SELECT * FROM Vista_Almacen_Trayecto_Lote;
+
+
+CREATE VIEW Vista_Almacen_Con_Lotes AS
+SELECT
+    A.id_almacen AS Almacen_ID,
+    A.calle AS Calle_Almacen,
+    A.numero AS Numero_Almacen,
+    A.localidad AS Localidad_Almacen,
+    T.id_trayecto AS Trayecto_ID,
+    T.origen AS Origen_Trayecto,
+    T.destino AS Destino_Trayecto,
+    L.id_lote AS Lote_ID,
+    L.estado AS Estado_Lote
+FROM Almacen A
+LEFT JOIN Tiene Ti ON A.id_almacen = Ti.id_almacen
+LEFT JOIN Trayecto T ON Ti.id_trayecto = T.id_trayecto
+LEFT JOIN Viaja V ON A.id_almacen = V.id_almacen
+LEFT JOIN Lote L ON V.id_lote = L.id_lote
+WHERE L.id_lote IS NOT NULL;
+
+SELECT * FROM Vista_Almacen_Con_Lotes;
+
+CREATE VIEW VistaChoferCamionLote AS
+SELECT M.cedula AS CedulaChofer, M.matricula AS MatriculaCamion, R.id_lote AS IDLote
+FROM Maneja M
+JOIN Realiza R ON M.matricula = R.matricula;
+
+SELECT * FROM VistaChoferCamionLote;
+
+
+CREATE VIEW VistaChoferCamionTrayecto AS
+SELECT M.cedula AS CedulaChofer, M.matricula AS MatriculaCamion, R.id_trayecto AS IDTrayecto
+FROM Maneja M
+JOIN Realiza R ON M.matricula = R.matricula;
+
+SELECT * FROM VistaChoferCamionTrayecto;

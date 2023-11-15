@@ -1,0 +1,657 @@
+﻿use megainc;
+
+DROP TABLE IF EXISTS Chofer;
+DROP TABLE IF EXISTS Direccion;
+DROP TABLE IF EXISTS Trayecto;
+DROP TABLE IF EXISTS Login;
+DROP TABLE IF EXISTS Maneja;
+DROP TABLE IF EXISTS Entrega;
+DROP TABLE IF EXISTS Pertenece;
+DROP TABLE IF EXISTS Viaja;
+DROP TABLE IF EXISTS Realiza;
+DROP TABLE IF EXISTS Tiene;
+DROP TABLE IF EXISTS Camion;
+DROP TABLE IF EXISTS Camioneta;
+DROP TABLE IF EXISTS Vehiculo;
+DROP TABLE IF EXISTS Paquete;
+DROP TABLE IF EXISTS Localidad;
+DROP TABLE IF EXISTS Almacen;
+DROP TABLE IF EXISTS Empresa;
+DROP TABLE IF EXISTS Lote;
+
+Create table Chofer(
+cedula int (10) not null primary key, 
+licencia varchar (10) not null,
+nombre varchar (50) not null, 
+apellido varchar (50) not null
+);
+
+Create table Vehiculo (
+matricula varchar (10) not null primary key,
+licencia varchar (10),
+estado varchar (50) not null,
+peso_max varchar (10)
+); 
+
+Create table Camion (
+matricula varchar (10) not null primary key,
+peso_max varchar (10)
+);
+
+Alter table Camion 
+Add Constraint fk_matricula 
+FOREIGN Key (matricula) references Vehiculo (matricula);
+
+Create table Camioneta (
+matricula varchar (10) not null primary key,
+peso_max varchar (10)
+);
+
+Alter table Camioneta 
+Add Constraint fk_Ccammatricula 
+FOREIGN Key (matricula) references Vehiculo (matricula);
+
+Create table Paquete (
+id_paquete int (10) not null primary key,
+estado varchar (50) not null,
+fecha_registro date not null,
+tipo varchar (20),
+fragil varchar (2) not null
+);
+
+Alter table Paquete
+MODIFY id_paquete int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+create table Localidad (
+localidad varchar (20) not null,
+departamento varchar (20) not null
+);
+
+Alter table Localidad 
+add Primary key (localidad, departamento);
+
+create table Direccion (
+id_paquete int (10) not null primary key,
+calle varchar (20) not null,
+numero int (10) not null,
+localidad varchar (20) not null
+);
+
+Alter table Direccion 
+Add Constraint fk_Didpaquete 
+FOREIGN Key (id_paquete) references Paquete (id_paquete);
+
+Alter table Direccion 
+Add Constraint fk_Dilocalidad
+FOREIGN Key (localidad) references Localidad (localidad);
+
+Create table Empresa (
+id_empresa int (10) not null,
+empresa varchar (20) not null
+);
+
+Alter table Empresa 
+add Primary key (id_empresa);
+
+Alter table Empresa
+MODIFY id_empresa int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+Create table Almacen (
+id_almacen int (10) not null,
+id_empresa int (10) not null,
+calle varchar (50) not null,
+numero int (10) not null,
+localidad varchar (50) not null
+);
+
+Alter table Almacen 
+add Primary key (id_almacen);
+
+Alter table Almacen 
+Add Constraint fk_empresa 
+FOREIGN Key (id_empresa) references Empresa (id_empresa);
+
+Alter table Almacen
+MODIFY id_almacen int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+Create table Lote (
+id_lote int (10) not null,
+estado varchar (20) not null,
+peso varchar (20) not null,
+almacen_destino int (10)
+);
+
+Alter table Lote
+add Primary key (id_lote);
+
+Alter table Lote
+MODIFY id_lote int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+Create table Trayecto (
+id_trayecto int (10) not null,
+origen varchar (100) not null,
+destino varchar (100) not null,
+distancia varchar (30) not null
+);
+
+Alter table Trayecto
+add Primary key (id_trayecto);
+
+Alter table Trayecto
+MODIFY id_trayecto int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+Create table Login (
+id_usuario int (10) not null,
+tipo_de_usuario varchar (15),
+cedula int (8),
+contraseña varchar (255) not null
+);
+
+Alter table Login
+add Primary key (id_usuario);
+
+Alter table Login
+add Constraint unique key cedula (cedula);
+
+Alter table Login 
+MODIFY id_usuario int (10) not null AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+/*************************/
+/*tabla de relaciones*/
+
+Create table Maneja (
+cedula int (10) not null,
+matricula varchar (10) not null
+);
+
+Alter table Maneja 
+add Primary key (cedula, matricula);
+
+Create table Entrega (
+id_paquete int (10) not null,
+matricula varchar (10) not null,
+fecha_entrega date  default null,
+hora_entrega time  default null
+);
+
+Alter table Entrega
+add Primary key (id_paquete);
+
+Create table Pertenece (
+id_paquete int (10) not null,
+id_lote int (10) not null
+);
+
+Alter table Pertenece 
+add Primary key (id_paquete);
+
+Alter table Pertenece 
+Add Constraint fk_Plote 
+FOREIGN Key (id_lote) references Lote (id_lote);
+
+Create table Viaja (
+id_lote int (10) not null,
+id_almacen int (10) not null,
+id_trayecto int (10) not null,
+fecha_llegada date,
+hora_llegada time
+);
+
+Alter table Viaja 
+add Primary key (id_lote, id_almacen, id_trayecto);
+
+Alter table Viaja 
+Add Constraint fk_Valmacen
+FOREIGN Key (id_almacen) references Almacen (id_almacen);
+
+Create table Realiza (
+id_lote int (10) not null,
+id_almacen int (10) not null,
+id_trayecto int (10) not null,
+matricula varchar (10) not null
+);
+
+Alter table Realiza 
+add Primary key (id_lote, id_almacen, id_trayecto);
+
+Alter table Realiza 
+Add Constraint fk_Rcamion 
+FOREIGN Key (matricula) references Camion (matricula);
+
+Create table Tiene (
+id_trayecto int (10) not null,
+id_almacen int (10) not null,
+posicion varchar (20)
+);
+
+Alter table Tiene 
+add Primary key (id_trayecto, id_almacen);
+
+
+/*Datos de Prueba*/
+
+insert into Chofer (cedula, licencia, nombre, apellido)  values ('54897452', 'D', 'Jose', 'Gonzales');
+insert into Chofer (cedula, licencia, nombre, apellido)  values ('17438941', 'C' , 'Sofia', 'Ramirez');
+insert into Chofer (cedula, licencia, nombre, apellido)  values ('29848642', 'D', 'Mario', 'Ramirez');
+
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('ZTP 5139', 'En espera', 'D', '31000');
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('CTP 5974', 'En viaje', 'D', '31000');
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('HTM 2681', 'Fuera de Servicio', 'D', '25000');
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('JTP 4458', 'En viaje', 'D','23000');
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('HTP 2621', 'Fuera de Servicio', 'C', '5000');
+insert into Vehiculo (matricula, estado, licencia, peso_max)  values ('HTM 8542', 'En Viaje', 'C', '5000');
+
+insert into Camion (matricula, peso_max)  values ('ZTP 5139', '31000');
+insert into Camion (matricula, peso_max)  values ('CTP 5974', '31000');
+insert into Camion (matricula, peso_max)  values ('JTP 4458', '23000');
+
+insert into Camioneta (matricula, peso_max)  values ('HTM 2681', '5000');
+insert into Camioneta (matricula, peso_max)  values ('HTM 8542', '5000');
+
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('432551', 'En viaje', '2023-08-31', 'Electronico', 'si');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('543678', 'Entregado', '2023-05-20', 'Indumentaria', 'no');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('413255', 'En viaje', '2023-09-04', 'Mueble', 'no');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('543264', 'En viaje', '2023-08-20', 'Mueble', 'no');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('154662', 'En espera', '2023-09-04', 'Electronico', 'si' );
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('652466', 'Entregado', '2023-08-20', 'Electronico', 'si');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('614436', 'Entregado', '2023-09-06', 'Mueble', 'si');
+insert into Paquete (id_paquete, estado, fecha_registro, tipo, fragil) values ('124556', 'Entregado', '2023-09-11', 'Mueble', 'no');
+
+
+insert into Localidad (localidad, departamento) values ('Rivera', 'Rivera');
+insert into Localidad (localidad, departamento) values ('Pando', 'Canelones');
+insert into Localidad (localidad, departamento) values ('Empalme olmos', 'Canelones');
+insert into Localidad (localidad, departamento) values ('Salto', 'Salto');
+insert into Localidad (localidad, departamento) values ('Melo', 'Cerro Largo');
+
+insert into Direccion (id_paquete, calle, numero, localidad) values ('432551', 'Diego Lamas', '1172', 'Rivera');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('543678', 'Agraciada', '810', 'Rivera');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('413255', 'Av. Sarandi', '1102', 'Rivera');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('543264', '25 de agosto', '808', 'Pando');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('154662', 'Lorenzo Latorre', '16', 'Empalme olmos');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('652466', 'Artigas', '2268', 'Salto');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('614436', '19 de abril', '651', 'Salto');
+insert into Direccion (id_paquete, calle, numero, localidad) values ('124556', 'Jose pedro varela', '688', 'Melo');
+
+insert into Empresa (id_empresa, empresa) values ('1', 'quick carry');
+insert into Empresa (id_empresa, empresa) values ('2', 'crecom');
+
+insert into Almacen (id_almacen, id_empresa, calle, numero, localidad)  values ('444', '1', '8 de octubre', '2054', 'Montevideo');
+insert into Almacen (id_almacen, id_empresa, calle, numero, localidad)  values ('445', '2', '18 de Julio', '344', 'Montevideo');
+insert into Almacen (id_almacen, id_empresa, calle, numero, localidad)  values ('130', '1', 'Independencia', '2532', 'Pando');
+insert into Almacen (id_almacen, id_empresa, calle, numero, localidad)  values ('234', '1', 'Paysandu', '1542', 'Rivera');
+insert into Almacen (id_almacen, id_empresa, calle, numero, localidad)  values ('34', '1', 'Brasil', '652', 'Salto');
+
+insert into Lote (id_lote, estado, peso, almacen_destino)  values ('53151', 'Entregado', '200', '130');
+insert into Lote (id_lote, estado, peso, almacen_destino)  values ('44512', 'En viaje', '134', '234');
+insert into Lote (id_lote, estado, peso, almacen_destino)  values ('23452', 'En viaje', '100', '234');
+insert into Lote (id_lote, estado, peso, almacen_destino)  values ('65312', 'En espera', '30', '34');
+
+insert into Trayecto (id_Trayecto, origen, destino, distancia)  values ('101','444','234','506'); 
+insert into Trayecto (id_Trayecto, origen, destino, distancia)  values ('102','444','34','491');
+
+insert into Maneja (cedula, matricula) values ('54897452', 'ZTP 5139');
+insert into Maneja (cedula, matricula) values ('17438941', 'JTP 4458');
+insert into Maneja (cedula, matricula) values ('29848642', 'CTP 5974');
+
+insert into Entrega (id_paquete, matricula, fecha_entrega, hora_entrega) values ('652466', 'HTP 2681', '2023-09-05' ,'13:30');
+insert into Entrega (id_paquete, matricula, fecha_entrega, hora_entrega) values ('614436', 'HTP 2681', '2023-05-05' ,'15:30');
+insert into Entrega (id_paquete, matricula, fecha_entrega, hora_entrega) values ('543264', 'HTP 2681', '2023-09-05' ,'15:30');
+insert into Entrega (id_paquete, matricula, fecha_entrega, hora_entrega) values ('432551', 'HTP 8542', null, null);
+
+insert into Entrega (id_paquete, matricula, fecha_entrega, hora_entrega) values ('413255', 'HTP 8542', null, null);
+
+insert into Viaja (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) values ('53151', '34',  '102', '2023-09-01', '08:35');
+insert into Viaja (id_lote, id_almacen, id_trayecto, fecha_llegada, hora_llegada) values ('53151', '130', '102', '2023-08-28', '17:00');
+
+
+/*Salto*/
+insert into Pertenece (id_paquete, id_lote) values ('652466','53151');
+insert into Pertenece (id_paquete, id_lote) values ('614436','53151');
+
+/*Rivera*/
+insert into Pertenece (id_paquete, id_lote) values ('413255','23452');
+insert into Pertenece (id_paquete, id_lote) values ('432551','44512');
+
+/*Pando*/
+insert into Pertenece (id_paquete, id_lote) values ('543264','44512');
+
+insert into Realiza (id_lote, id_almacen, id_trayecto, matricula) values ('23452', '234', '101', 'JTP 4458');
+insert into Realiza (id_lote, id_almacen, id_trayecto, matricula) values ('44512', '130', '102', 'ZTP 5139');
+insert into Realiza (id_lote, id_almacen, id_trayecto, matricula) values ('53151', '34', '102', 'CTP 5974');
+
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('101', '444', 'origen');
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('101', '130', 'trasbordo');
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('101', '234', 'destino');
+
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('102', '444', 'origen');
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('102', '130', 'trasbordo');
+insert into Tiene (id_trayecto, id_almacen, posicion) value ('102', '34', 'destino');
+
+insert into Login (id_usuario, tipo_de_usuario, cedula, contraseña) values 
+(1, 'admin', '55555',
+'$2y$10$/UjfZIXqEUL4BWyofhniGOdi/kaQeeGYVDw9zsmCCBEi6TwtXlFZG'),
+(2, 'chofer', '4444',
+'$2y$10$HQ/0wu3uzvBj5KPIicJiFOjtX29rLZJzO0ijSPNn08QpDa4YOrDWa'),
+(3, 'almacenista', '333',
+'$2y$10$WAh5ypic2Me2jU830ozDB.AfBjnxZ6r4eVMjNMB4xTgb9fs0h4.0.'),
+(4, 'administracion', '666666',
+'$2y$10$NH7BfZoPG9LkBYdw3j9JnOIXM2JHMVTFkT57i0wqkGym317eqwvdG');
+
+DELIMITER //
+CREATE TRIGGER ValidarFechaEntrega
+BEFORE INSERT ON Entrega
+FOR EACH ROW
+BEGIN
+    DECLARE fecha_registro_paquete DATE;
+
+    -- Obtener la fecha de registro del paquete
+    SELECT fecha_registro INTO fecha_registro_paquete
+    FROM Paquete
+    WHERE id_paquete = NEW.id_paquete;
+
+    -- Verificar que la fecha de entrega sea posterior o igual a la fecha de registro
+    IF NEW.fecha_entrega < fecha_registro_paquete THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La fecha de entrega no puede ser anterior a la fecha de registro del paquete';
+    END IF;
+END;
+//
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE TRIGGER ChequeoPeso
+BEFORE INSERT ON Realiza
+FOR EACH ROW
+BEGIN
+    DECLARE total_weight DECIMAL(10, 2);
+    DECLARE max_weight DECIMAL(10, 2);
+
+    -- Calcula la suma del peso de todos los lotes relacionados con el camión actual
+    SELECT SUM(CAST(L.peso AS DECIMAL(10, 2)))
+    INTO total_weight
+    FROM Lote L
+    WHERE L.id_lote IN (SELECT id_lote FROM Realiza WHERE matricula = NEW.matricula);
+
+    -- Obtiene el peso máximo del camión
+    SELECT CAST(C.peso_max AS DECIMAL(10, 2))
+    INTO max_weight
+    FROM Camion C
+    WHERE C.matricula = NEW.matricula;
+
+    -- Comprueba si la suma excede el límite del camión y lanza una excepción si es así
+    IF (total_weight > max_weight) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La suma del peso de los lotes excede el límite del camión';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER CheckLoteWeight
+BEFORE INSERT ON Realiza
+FOR EACH ROW
+BEGIN
+    DECLARE lote_weight DECIMAL(10, 2);
+    DECLARE max_weight DECIMAL(10, 2);
+
+    SELECT CAST(L.peso AS DECIMAL(10, 2))
+    INTO lote_weight
+    FROM Lote L
+    WHERE L.id_lote = NEW.id_lote;
+
+
+    SELECT CAST(C.peso_max AS DECIMAL(10, 2))
+    INTO max_weight
+    FROM Camion C
+    WHERE C.matricula = NEW.matricula;
+
+  
+    IF lote_weight > max_weight THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El peso del lote supera el límite del camión';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER chofer_licencia_check BEFORE INSERT ON Chofer
+FOR EACH ROW
+BEGIN
+    IF NEW.licencia NOT IN ('Camion', 'Camioneta', 'D', 'C') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Valor de licencia no válido';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER chofer_nombre_apellido_check BEFORE INSERT ON Chofer
+FOR EACH ROW
+BEGIN
+    IF NEW.nombre REGEXP '^[A-Za-z]+$' = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El nombre debe contener solo letras';
+    END IF;
+
+    IF NEW.apellido REGEXP '^[A-Za-z]+$' = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El apellido debe contener solo letras';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER camion_peso_max_check BEFORE INSERT ON Camion
+FOR EACH ROW
+BEGIN
+    IF NEW.peso_max IS NOT NULL AND NEW.peso_max NOT REGEXP '^[0-9]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo peso_max debe contener solo valores numéricos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER camioneta_peso_max_check BEFORE INSERT ON Camioneta
+FOR EACH ROW
+BEGIN
+    IF NEW.peso_max IS NOT NULL AND NEW.peso_max NOT REGEXP '^[0-9]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo peso_max debe contener solo valores numéricos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Direccion_check_numero_min_length
+BEFORE INSERT ON Direccion
+FOR EACH ROW
+BEGIN
+    IF LENGTH(NEW.numero) < 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo numero debe tener al menos 3 dígitos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Empresa_check_id_empresa_positive
+BEFORE INSERT ON Empresa
+FOR EACH ROW
+BEGIN
+    IF NEW.id_empresa <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El valor en id_empresa debe ser positivo';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Viaja_check_positive_values
+BEFORE INSERT ON Viaja
+FOR EACH ROW
+BEGIN
+    IF NEW.id_lote <= 0 OR NEW.id_almacen <= 0 OR NEW.id_trayecto <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Los valores en id_lote, id_almacen e id_trayecto deben ser positivos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+
+
+ALTER TABLE Chofer 
+ADD CONSTRAINT check_cedula_length CHECK (LENGTH(cedula) >= 8);
+       
+
+ALTER TABLE Chofer
+ ADD CONSTRAINT check_nombre_not_empty CHECK (nombre <> '');
+    
+
+ALTER TABLE Chofer
+ ADD CONSTRAINT check_apellido_not_empty CHECK (apellido <> '');
+
+
+ALTER TABLE Vehiculo
+ ADD CONSTRAINT check_licencia_value CHECK (licencia IN ('Camion', 'Camioneta', 'D', 'C'));
+
+
+ALTER TABLE Vehiculo 
+ADD CONSTRAINT check_estado_not_empty CHECK (estado <> '');
+    
+
+ALTER TABLE Vehiculo
+ ADD CONSTRAINT check_matricula_not_empty CHECK (matricula <> '');
+
+ALTER TABLE Vehiculo
+ 
+ ADD CONSTRAINT check_VEstado CHECK (estado in ('En viaje','Fuera de Servicio','En espera'));
+
+
+ALTER TABLE Localidad
+ ADD CONSTRAINT check_localidad_not_empty CHECK (localidad <> '');
+
+
+ALTER TABLE Localidad
+ ADD CONSTRAINT check_departamento_not_empty CHECK (departamento <> '');
+
+
+ALTER TABLE Lote
+ ADD CONSTRAINT check_LEstado CHECK (estado in ('En espera','Recogido','Armado','En Viaje','En transbordo','Entregado', 'Fallo entrega'));
+
+ALTER TABLE Paquete
+ ADD CONSTRAINT check_PEstado CHECK (estado in ('En espera','Recogido','En Almacen central', 'En almacen destino','En Viaje','Entregado','Fallo entrega'));
+
+
+ALTER TABLE Paquete 
+ADD CONSTRAINT check_tipo_not_empty CHECK (tipo IS NULL OR tipo <> '');
+
+
+ALTER TABLE Paquete
+ ADD CONSTRAINT check_fragil_valid CHECK (fragil IN ('Sí', 'No'));
+
+
+ALTER TABLE Almacen
+ ADD CONSTRAINT check_id_empresa_positive CHECK (id_empresa >= 0);
+
+
+ALTER TABLE Almacen
+ ADD CONSTRAINT check_numero_positive CHECK (numero > 0);
+
+
+ALTER TABLE Almacen
+ ADD CONSTRAINT check_calle_not_empty CHECK (calle <> '');
+
+
+ALTER TABLE Trayecto
+ ADD CONSTRAINT check_origen_destino_not_empty CHECK (origen <> '' AND destino <> '');
+
+
+ALTER TABLE Login
+ ADD CONSTRAINT check_cedula_positive CHECK (cedula > 0);  
+
+
+ALTER TABLE Login
+ ADD CONSTRAINT check_contraseña_not_empty CHECK (contraseña <> '');
+
+
+ALTER TABLE Login
+ ADD CONSTRAINT check_tipo_de_usuario_valid CHECK (tipo_de_usuario IN ('admin', 'chofer', 'almacenista', 'administracion'));
+
+
+ALTER TABLE Pertenece
+ ADD CONSTRAINT check_id_paquete_positive CHECK (id_paquete > 0);
+
+
+ALTER TABLE Realiza 
+ADD CONSTRAINT check_id_almacen_positive CHECK (id_almacen > 0);
+
+
+ALTER TABLE Realiza
+ ADD CONSTRAINT check_id_trayecto_positive CHECK (id_trayecto > 0);
+
+
+CREATE VIEW Vista_Almacen_Trayecto_Lote AS
+SELECT
+    A.id_almacen AS Almacen_ID,
+    A.calle AS Calle_Almacen,
+    A.numero AS Numero_Almacen,
+    A.localidad AS Localidad_Almacen,
+    T.id_trayecto AS Trayecto_ID,
+    T.origen AS Origen_Trayecto,
+    T.destino AS Destino_Trayecto,
+    L.id_lote AS Lote_ID,
+    L.estado AS Estado_Lote
+FROM Almacen A
+LEFT JOIN Tiene Ti ON A.id_almacen = Ti.id_almacen
+LEFT JOIN Trayecto T ON Ti.id_trayecto = T.id_trayecto
+LEFT JOIN Viaja V ON A.id_almacen = V.id_almacen
+LEFT JOIN Lote L ON V.id_lote = L.id_lote;
+
+CREATE VIEW Vista_Almacen_Con_Lotes AS
+SELECT
+    A.id_almacen AS Almacen_ID,
+    A.calle AS Calle_Almacen,
+    A.numero AS Numero_Almacen,
+    A.localidad AS Localidad_Almacen,
+    T.id_trayecto AS Trayecto_ID,
+    T.origen AS Origen_Trayecto,
+    T.destino AS Destino_Trayecto,
+    L.id_lote AS Lote_ID,
+    L.estado AS Estado_Lote
+FROM Almacen A
+LEFT JOIN Tiene Ti ON A.id_almacen = Ti.id_almacen
+LEFT JOIN Trayecto T ON Ti.id_trayecto = T.id_trayecto
+LEFT JOIN Viaja V ON A.id_almacen = V.id_almacen
+LEFT JOIN Lote L ON V.id_lote = L.id_lote
+WHERE L.id_lote IS NOT NULL;
+
+CREATE VIEW VistaChoferCamionLote AS
+SELECT M.cedula AS CedulaChofer, M.matricula AS MatriculaCamion, R.id_lote AS IDLote
+FROM Maneja M
+JOIN Realiza R ON M.matricula = R.matricula;
+
+CREATE VIEW VistaChoferCamionTrayecto AS
+SELECT M.cedula AS CedulaChofer, M.matricula AS MatriculaCamion, R.id_trayecto AS IDTrayecto
+FROM Maneja M
+JOIN Realiza R ON M.matricula = R.matricula;
+
+

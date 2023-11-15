@@ -1,0 +1,197 @@
+DELIMITER //
+CREATE TRIGGER ValidarFechaEntrega
+BEFORE INSERT ON Entrega
+FOR EACH ROW
+BEGIN
+    DECLARE fecha_registro_paquete DATE;
+
+    -- Obtener la fecha de registro del paquete
+    SELECT fecha_registro INTO fecha_registro_paquete
+    FROM Paquete
+    WHERE id_paquete = NEW.id_paquete;
+
+    -- Verificar que la fecha de entrega sea posterior o igual a la fecha de registro
+    IF NEW.fecha_entrega < fecha_registro_paquete THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La fecha de entrega no puede ser anterior a la fecha de registro del paquete';
+    END IF;
+END;
+//
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE TRIGGER ChequeoPeso
+BEFORE INSERT ON Realiza
+FOR EACH ROW
+BEGIN
+    DECLARE total_weight DECIMAL(10, 2);
+    DECLARE max_weight DECIMAL(10, 2);
+
+    -- Calcula la suma del peso de todos los lotes relacionados con el camión actual
+    SELECT SUM(CAST(L.peso AS DECIMAL(10, 2)))
+    INTO total_weight
+    FROM Lote L
+    WHERE L.id_lote IN (SELECT id_lote FROM Realiza WHERE matricula = NEW.matricula);
+
+    -- Obtiene el peso máximo del camión
+    SELECT CAST(C.peso_max AS DECIMAL(10, 2))
+    INTO max_weight
+    FROM Camion C
+    WHERE C.matricula = NEW.matricula;
+
+    -- Comprueba si la suma excede el límite del camión y lanza una excepción si es así
+    IF (total_weight > max_weight) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La suma del peso de los lotes excede el límite del camión';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER CheckLoteWeight
+BEFORE INSERT ON Realiza
+FOR EACH ROW
+BEGIN
+    DECLARE lote_weight DECIMAL(10, 2);
+    DECLARE max_weight DECIMAL(10, 2);
+
+    -- Obtiene el peso del lote que se va a agregar
+    SELECT CAST(L.peso AS DECIMAL(10, 2))
+    INTO lote_weight
+    FROM Lote L
+    WHERE L.id_lote = NEW.id_lote;
+
+    -- Obtiene el peso máximo del camión al que se va a agregar el lote
+    SELECT CAST(C.peso_max AS DECIMAL(10, 2))
+    INTO max_weight
+    FROM Camion C
+    WHERE C.matricula = NEW.matricula;
+
+    -- Comprueba si el peso del lote supera el límite del camión y lanza una excepción si es así
+    IF lote_weight > max_weight THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El peso del lote supera el límite del camión';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER chofer_licencia_check BEFORE INSERT ON Chofer
+FOR EACH ROW
+BEGIN
+    IF NEW.licencia NOT IN ('Camion', 'Camioneta', 'D', 'C') THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Valor de licencia no válido';
+    END IF;
+END;
+//
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER chofer_nombre_apellido_check BEFORE INSERT ON Chofer
+FOR EACH ROW
+BEGIN
+    IF NEW.nombre REGEXP '^[A-Za-z]+$' = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El nombre debe contener solo letras';
+    END IF;
+
+    IF NEW.apellido REGEXP '^[A-Za-z]+$' = 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El apellido debe contener solo letras';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER camion_peso_max_check BEFORE INSERT ON Camion
+FOR EACH ROW
+BEGIN
+    IF NEW.peso_max IS NOT NULL AND NEW.peso_max NOT REGEXP '^[0-9]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo peso_max debe contener solo valores numéricos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER camioneta_peso_max_check BEFORE INSERT ON Camioneta
+FOR EACH ROW
+BEGIN
+    IF NEW.peso_max IS NOT NULL AND NEW.peso_max NOT REGEXP '^[0-9]+$' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo peso_max debe contener solo valores numéricos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Direccion_check_numero_min_length
+BEFORE INSERT ON Direccion
+FOR EACH ROW
+BEGIN
+    IF LENGTH(NEW.numero) < 3 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El campo numero debe tener al menos 3 dígitos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Empresa_check_id_empresa_positive
+BEFORE INSERT ON Empresa
+FOR EACH ROW
+BEGIN
+    IF NEW.id_empresa <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'El valor en id_empresa debe ser positivo';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER Viaja_check_positive_values
+BEFORE INSERT ON Viaja
+FOR EACH ROW
+BEGIN
+    IF NEW.id_lote <= 0 OR NEW.id_almacen <= 0 OR NEW.id_trayecto <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Los valores en id_lote, id_almacen e id_trayecto deben ser positivos';
+    END IF;
+END;
+//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER before_insert_entrega
+BEFORE INSERT ON Entrega
+FOR EACH ROW
+BEGIN
+  IF NEW.fecha_entrega < (SELECT fecha_registro FROM Paquete WHERE id_paquete = NEW.id_paquete) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'La fecha de entrega no puede ser anterior a la fecha de registro del paquete';
+  END IF;
+END;
+//
+DELIMITER ;
+
+
+
+
+
+
